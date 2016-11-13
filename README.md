@@ -1,2 +1,2 @@
-# redux_projects
-redux react webpack node.js
+# redux-ru-tutorial
+Код для раздела [Подготовка/ESLint](https://maxfarseer.gitbooks.io/redux-course-ru/content/eslint.html)
