@@ -1,2 +1,2 @@
 # redux-ru-tutorial
-Код для раздела [Подготовка/ESLint](https://maxfarseer.gitbooks.io/redux-course-ru/content/eslint.html)
+Код для [Наводим порядок](https://maxfarseer.gitbooks.io/redux-course-ru/content/navodim_poryadok.html)

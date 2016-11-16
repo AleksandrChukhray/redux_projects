@@ -1,27 +1,33 @@
 import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import User from '../components/User'
 import Page from '../components/Page'
+import * as pageActions from '../actions/PageActions'
 
-//компонент и его реализация
 class App extends Component {
-    render() {
-        const { user, page } = this.props
-        return <div>
-            <User name={user.name} />
-            <Page photos={page.photos} year={page.year} />
-        </div>
-    }
+  render() {
+    const { user, page } = this.props
+    const { setYear } = this.props.pageActions
+
+    return <div className='row'>
+      <Page photos={page.photos} year={page.year} setYear={setYear} />
+      <User name={user.name} />
+    </div>
+  }
 }
 
-//связываем данные store c компонентом App посредством функции
-function mapStateToProps(state){
-    return {
-        user: state.user,
-        page: state.page
-    }
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    page: state.page
+  }
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    pageActions: bindActionCreators(pageActions, dispatch)
+  }
+}
 
-//сама связь
-export default connect (mapStateToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App)
