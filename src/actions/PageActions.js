@@ -1,10 +1,77 @@
-import { SET_YEAR } from '../constants/Page'
+import {
+    GET_PHOTOS_REQUEST,
+    GET_PHOTOS_FAIL,
+    GET_PHOTOS_SUCCESS
+} from '../constants/Page'
 
-export function setYear(year) {
+let photosArr = []
+let cached = false
 
-  return {
-    type: SET_YEAR,
-    payload: year
+//сортирует фото по годам
+function makeYearPhotos(photos, selectedYear) {
+  let createdYear, yearPhotos = []
+
+  console.log(photos);
+  photos.forEach((item) => {
+    createdYear = new Date(item.created*1000).getFullYear()
+    console.log(createdYear);
+    if (createdYear === selectedYear ) {
+      yearPhotos.push(item)
+    }
+  })
+
+  yearPhotos.sort((a,b) => b.likes.count-a.likes.count);
+
+  return yearPhotos
+}
+
+function getMorePhotos(offset, count, year, dispatch) {
+  VK.Api.call('photos.getAll', {extended:1, count: count, offset: offset},(r) => { // eslint-disable-line no-undef
+    try {
+      if (offset <= r.response[0] + count) {
+        offset+=200;
+        photosArr = photosArr.concat(r.response)
+        getMorePhotos(offset,count,year,dispatch)
+      } else {
+        console.log(photosArr, 'getMorePhotos');
+        let photos = makeYearPhotos(photosArr, year)
+        cached = true
+        dispatch({
+          type: GET_PHOTOS_SUCCESS,
+          payload: photos
+        })
+      }
+    }
+    catch(e) {
+      dispatch({
+        type: GET_PHOTOS_FAIL,
+        error: true,
+        payload: new Error(e)
+      })
+    }
+
+  })
+}
+
+
+export function getPhotos(year) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_PHOTOS_REQUEST,
+      payload: year
+    })
+
+    if (cached) {
+      console.log(photosArr, 'getPhotos');
+      let photos = makeYearPhotos(photosArr, year)
+      console.log(photos);
+      dispatch({
+        type: GET_PHOTOS_SUCCESS,
+        payload: photos
+      })
+    } else {
+      getMorePhotos(0,200,year,dispatch)
+    }
+
   }
-
 }
